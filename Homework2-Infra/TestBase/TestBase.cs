@@ -8,7 +8,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 
-namespace Homework1_Infra.TestBase
+namespace Homework2_Infra.TestBase
 {
     [TestFixture]
     public class TestBase : IDisposable
@@ -26,6 +26,7 @@ namespace Homework1_Infra.TestBase
             DownloadChromeDriver(GoogleApiHost, latestVersion, AppContext.BaseDirectory, AppContext.BaseDirectory);
             WebDriver = new ChromeDriver(AppContext.BaseDirectory);
             Waiter = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(30));
+            WebDriver.Manage().Window.Maximize();
         }
 
         [OneTimeTearDown]
@@ -85,6 +86,7 @@ namespace Homework1_Infra.TestBase
         {
             if (_disposed)
                 return;
+            WebDriver.Quit();
             WebDriver.Dispose();
             _disposed = true;
         }

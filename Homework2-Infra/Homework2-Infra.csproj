@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <RootNamespace>Homework1_Infra</RootNamespace>
+    <RootNamespace>Homework2_Infra</RootNamespace>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
