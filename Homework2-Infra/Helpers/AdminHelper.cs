@@ -18,6 +18,9 @@ namespace Homework2_Infra
         public IWebElement GetPasswordField() => _driver.FindElement(By.XPath("//input[@name='password']"));
         public void EnterPassword(string password) => GetPasswordField().SendKeys(password);
         public void PressLoginButton() => _driver.FindElement(By.XPath("//button[@name='login']")).Click();
+        public IReadOnlyCollection<IWebElement> GetAllTabs() => _driver.FindElements(By.CssSelector("ul#box-apps-menu > li"));
+        public IReadOnlyCollection<IWebElement> GetAllSubTabs() => _driver.FindElements(By.CssSelector("ul#box-apps-menu > li li"));
+        public By ByTabHeader() => By.CssSelector("td#content > h1");
         #endregion
 
         public AdminHelper(IWebDriver driver)
