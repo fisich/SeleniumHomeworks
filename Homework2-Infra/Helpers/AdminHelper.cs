@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Homework2_Infra
+namespace Homework2_Infra.Helpers
 {
     public class AdminHelper
     {
