@@ -71,5 +71,21 @@ namespace Homework2_Infra
                 CollectionAssert.AreEqual(zoneNames.OrderBy(z => z), zoneNames, $"Zones not sorted on page {countryPage}");
             }
         }
+
+        [Test]
+        public void CheckThatGeoZonesSortedByNames()
+        {
+            WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
+            AdminHelper.LoginAsAdmin("admin", "admin");
+            AdminHelper.GetAllTabs().Where(tab => tab.Text == "Geo Zones").First().Click();
+            var countriesInfo = AdminHelper.GetCountriesList().Select(country => AdminHelper.GetGeoZoneCountryInfo(country)).ToList();
+            foreach (var countryPage in countriesInfo.Select(c => c.editPageUrl))
+            {
+                WebDriver.Navigate().GoToUrl(countryPage);
+                var geozonesInfo = AdminHelper.GetZonesList().Select(zone => AdminHelper.GetGeoZoneInfo(zone));
+                var zoneNames = geozonesInfo.Select(g => g.ZoneDropDown.Text);
+                CollectionAssert.AreEqual(zoneNames.OrderBy(z => z), zoneNames, $"Zones not sorted on page {countryPage}");
+            }
+        }
     }
 }

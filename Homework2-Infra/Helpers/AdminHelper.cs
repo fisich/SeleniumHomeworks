@@ -41,6 +41,20 @@ namespace Homework2_Infra.Helpers
             return (Int32.Parse(cols[0].Text), cols[1].Text, cols[2].Text, cols[3]);
         }
         #endregion
+
+        #region GeoZonesTab actions and locators
+        public (int Id, string Name, int Zones, string editPageUrl) GetGeoZoneCountryInfo(IWebElement countryRow)
+        {
+            var cols = countryRow.FindElements(By.CssSelector("td"));
+            return (Int32.Parse(cols[1].Text), cols[2].Text, Int32.Parse(cols[3].Text), cols[4].FindElement(By.CssSelector("a")).GetAttribute("href"));
+        }
+        public (int Id, IWebElement CountriesDropDown, IWebElement ZoneDropDown, IWebElement deleteButton) GetGeoZoneInfo(IWebElement geoZoneRow)
+        {
+            var cols = geoZoneRow.FindElements(By.CssSelector("td"));
+            return (Int32.Parse(cols[0].Text), cols[1], cols[2], cols[3]);
+        }
+        #endregion
+
         public AdminHelper(IWebDriver driver)
         {
             _driver = driver;
