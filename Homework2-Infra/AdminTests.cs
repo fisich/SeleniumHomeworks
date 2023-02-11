@@ -41,8 +41,8 @@ namespace Homework2_Infra
                 tab.Click();
                 var header = WebDriver.WaitElementVisible(AdminHelper.ByTabHeader());
                 Assert.NotNull(header, $"Can't found H1 header on tab: {tabText}");
-
-                for (int j = 0; j < 0; j++)
+                var subTabsCount = AdminHelper.GetAllSubTabs().Count;
+                for (int j = 0; j < subTabsCount; j++)
                 {
                     var subtab = AdminHelper.GetAllSubTabs().ElementAt(j);
                     var subTabText = subtab.Text;
