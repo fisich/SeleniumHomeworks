@@ -23,6 +23,24 @@ namespace Homework2_Infra.Helpers
         public By ByTabHeader() => By.CssSelector("td#content > h1");
         #endregion
 
+        #region CountriesTab actions and locators
+        public IReadOnlyCollection<IWebElement> GetCountriesList() => _driver.FindElements(By.CssSelector("table.dataTable tr.row"));
+        public (int Id, string Code, string Name, int Zones, string editPageUrl) GetCountryInfo(IWebElement countryRow)
+        {
+            var cols = countryRow.FindElements(By.CssSelector("td"));
+            return (Int32.Parse(cols[2].Text), cols[3].Text, cols[4].Text, Int32.Parse(cols[5].Text), cols[6].FindElement(By.CssSelector("a")).GetAttribute("href"));
+        }
+        public IEnumerable<IWebElement> GetZonesList()
+        {
+            var dataRows = _driver.FindElements(By.CssSelector("table.dataTable tr:not([class=header])"));
+            return dataRows.Take(dataRows.Count - 1);
+        }
+        public (int Id, string Code, string Name, IWebElement deleteButton) GetZoneInfo(IWebElement zoneRow)
+        {
+            var cols = zoneRow.FindElements(By.CssSelector("td"));
+            return (Int32.Parse(cols[0].Text), cols[1].Text, cols[2].Text, cols[3]);
+        }
+        #endregion
         public AdminHelper(IWebDriver driver)
         {
             _driver = driver;

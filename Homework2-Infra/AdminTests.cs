@@ -52,5 +52,24 @@ namespace Homework2_Infra
                 }
             }
         }
+
+        [Test]
+        public void CheckThatCountriesAndZonesSortedByNames()
+        {
+            WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
+            AdminHelper.LoginAsAdmin("admin", "admin");
+            AdminHelper.GetAllTabs().Where(tab => tab.Text == "Countries").First().Click();
+            var countriesInfo = AdminHelper.GetCountriesList().Select(country => AdminHelper.GetCountryInfo(country)).ToList();
+            var countriesNames = countriesInfo.Select(c => c.Name);
+            CollectionAssert.AreEqual(countriesNames.OrderBy(c => c), countriesNames, "Countries list not sorted by name");
+            var countryEditPages = countriesInfo.Where(c => c.Zones > 0).Select(c => c.editPageUrl);
+            foreach (var countryPage in countryEditPages)
+            {
+                WebDriver.Navigate().GoToUrl(countryPage);
+                var zonesInfo = AdminHelper.GetZonesList().Select(zone => AdminHelper.GetZoneInfo(zone));
+                var zoneNames = zonesInfo.Select(z => z.Name);
+                CollectionAssert.AreEqual(zoneNames.OrderBy(z => z), zoneNames, $"Zones not sorted on page {countryPage}");
+            }
+        }
     }
 }
