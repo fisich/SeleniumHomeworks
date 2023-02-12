@@ -1,6 +1,7 @@
 ﻿using Homework2_Infra.Helpers;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,7 +84,7 @@ namespace Homework2_Infra
             {
                 WebDriver.Navigate().GoToUrl(countryPage);
                 var geozonesInfo = AdminHelper.GetZonesList().Select(zone => AdminHelper.GetGeoZoneInfo(zone));
-                var zoneNames = geozonesInfo.Select(g => g.ZoneDropDown.Text);
+                var zoneNames = geozonesInfo.Select(g => new SelectElement(g.ZoneDropDown).SelectedOption.Text).ToList();
                 CollectionAssert.AreEqual(zoneNames.OrderBy(z => z), zoneNames, $"Zones not sorted on page {countryPage}");
             }
         }

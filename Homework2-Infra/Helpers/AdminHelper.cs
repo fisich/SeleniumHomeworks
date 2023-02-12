@@ -38,7 +38,7 @@ namespace Homework2_Infra.Helpers
         public (int Id, string Code, string Name, IWebElement deleteButton) GetZoneInfo(IWebElement zoneRow)
         {
             var cols = zoneRow.FindElements(By.CssSelector("td"));
-            return (Int32.Parse(cols[0].Text), cols[1].Text, cols[2].Text, cols[3]);
+            return (Int32.Parse(cols[0].Text), cols[1].Text, cols[2].Text, cols[3].FindElement(By.CssSelector("a")));
         }
         #endregion
 
@@ -51,7 +51,7 @@ namespace Homework2_Infra.Helpers
         public (int Id, IWebElement CountriesDropDown, IWebElement ZoneDropDown, IWebElement deleteButton) GetGeoZoneInfo(IWebElement geoZoneRow)
         {
             var cols = geoZoneRow.FindElements(By.CssSelector("td"));
-            return (Int32.Parse(cols[0].Text), cols[1], cols[2], cols[3]);
+            return (Int32.Parse(cols[0].Text), cols[1].FindElement(By.CssSelector("select")), cols[2].FindElement(By.CssSelector("select")), cols[3].FindElement(By.CssSelector("a")));
         }
         #endregion
 
