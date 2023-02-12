@@ -14,6 +14,8 @@ namespace Homework2_Infra.Helpers
 
         #region Simple actions and locators
         public IReadOnlyCollection<IWebElement> GetAllProductCards() => _driver.FindElements(By.CssSelector("li.product"));
+        public IWebElement GetInfoBlock(string id) => _driver.FindElement(By.CssSelector($"div#{id}"));
+        public IReadOnlyCollection<IWebElement> GetAllProductCardsInsideInfoBlock(IWebElement context) => context.FindElements(By.CssSelector("li.product"));
         public IReadOnlyCollection<IWebElement> GetAllStickersInElement(IWebElement contextElement) => contextElement.FindElements(By.CssSelector("div.sticker"));
         #endregion
 
