@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Diagnostics;
@@ -24,7 +26,9 @@ namespace Homework2_Infra.TestBase
             KillAllChromeDriverProcesses();
             var latestVersion = GetLatestChromeDriverVersion();
             DownloadChromeDriver(GoogleApiHost, latestVersion, AppContext.BaseDirectory, AppContext.BaseDirectory);
-            WebDriver = new ChromeDriver(AppContext.BaseDirectory);
+            //WebDriver = new ChromeDriver(AppContext.BaseDirectory);
+            //WebDriver = new InternetExplorerDriver(@"C:\SeleniumDrivers\IEDriverServer.exe");
+            WebDriver = new FirefoxDriver(@"C:\SeleniumDrivers\geckodriver.exe");
             Waiter = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(30));
             WebDriver.Manage().Window.Maximize();
         }
