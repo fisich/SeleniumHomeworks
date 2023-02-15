@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Homework2_Infra
 {
@@ -14,12 +12,14 @@ namespace Homework2_Infra
     {
         public MainPageHelper MainPage { get; private set; }
         public ProductPageHelper ProductPage { get; private set; }
+        public RegistrationHelper Registration { get; private set; }
 
         [SetUp]
         public void Initialize()
         {
             MainPage = new MainPageHelper(WebDriver);
             ProductPage = new ProductPageHelper(WebDriver);
+            Registration = new RegistrationHelper(WebDriver); 
         }
 
         [Test]
@@ -77,6 +77,22 @@ namespace Homework2_Infra
             Assert.IsTrue(Double.Parse(productRegularPriceElement.GetCssValue("font-size").Replace("px", ""), CultureInfo.InvariantCulture)
                 < Double.Parse(productCampaignPriceElement.GetCssValue("font-size").Replace("px", ""), CultureInfo.InvariantCulture),
                 "Sale font size should be bigger than regular");
+        }
+
+        [Test]
+        public void RegisterNewUserTest()
+        {
+            WebDriver.Navigate().GoToUrl(MainPageHelper.BasePageUrl);
+            MainPage.ClickRegisterNewUser();
+            var email = $"{MethodsExtensions.RandomString(10).ToLower()}@{MethodsExtensions.RandomString(4).ToLower()}.ru";
+            Registration.QuickFillInputForm("Alexey","Fisenko", MethodsExtensions.RandomString(20), new Random().Next(10000, 99999).ToString(),
+                "Moscow", "United States", email, MethodsExtensions.RandomString(12, true), "password");
+            Registration.ClickCreateAccount();
+            WebDriver.WaitElementEnabled(MainPageHelper.LogoutBy); // wait after redirect
+            MainPage.ClickLogout();
+            MainPage.Login(email, "password");
+            WebDriver.WaitElementEnabled(MainPageHelper.LogoutBy); // wait after redirect
+            MainPage.ClickLogout();
         }
     }
 }

@@ -24,8 +24,8 @@ namespace Homework2_Infra.TestBase
         public void InitializeTestBase()
         {
             KillAllChromeDriverProcesses();
-            var latestVersion = GetLatestChromeDriverVersion();
-            DownloadChromeDriver(GoogleApiHost, latestVersion, AppContext.BaseDirectory, AppContext.BaseDirectory);
+            //var latestVersion = GetLatestChromeDriverVersion();
+            //DownloadChromeDriver(GoogleApiHost, latestVersion, AppContext.BaseDirectory, AppContext.BaseDirectory);
             //WebDriver = new ChromeDriver(AppContext.BaseDirectory);
             //WebDriver = new InternetExplorerDriver(@"C:\SeleniumDrivers\IEDriverServer.exe");
             WebDriver = new FirefoxDriver(@"C:\SeleniumDrivers\geckodriver.exe");
