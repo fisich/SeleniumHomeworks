@@ -16,4 +16,12 @@
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
   </ItemGroup>
 
+  <Target Name ="CopyResources" AfterTargets="Build">
+    <Message Text="Executing CopyResources task" Importance="High" />
+    <Copy
+      SourceFiles="$(ProjectDir)Resources\donald-duck.png"
+      DestinationFolder="$(TargetDir)\Resources\" />
+
+    <Message Text="Copied build files" Importance="High" />
+  </Target>
 </Project>

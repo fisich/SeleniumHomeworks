@@ -3,21 +3,21 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Homework2_Infra
 {
     public class AdminTests : TestBase.TestBase
     {
         public AdminHelper AdminHelper { get; private set; }
+        public CatalogHelper CatalogHelper { get; private set; }
 
         [SetUp]
         public void Initialize()
         {
             AdminHelper = new AdminHelper(WebDriver);
+            CatalogHelper = new CatalogHelper(WebDriver);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace Homework2_Infra
         {
             WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
             AdminHelper.LoginAsAdmin("admin", "admin");
-            AdminHelper.GetAllTabs().Where(tab => tab.Text == "Geo Zones").First().Click();
+            AdminHelper.GetAllTabs().First(tab => tab.Text == "Geo Zones").Click();
             var countriesInfo = AdminHelper.GetCountriesList().Select(country => AdminHelper.GetGeoZoneCountryInfo(country)).ToList();
             foreach (var countryPage in countriesInfo.Select(c => c.editPageUrl))
             {
@@ -87,6 +87,52 @@ namespace Homework2_Infra
                 var zoneNames = geozonesInfo.Select(g => new SelectElement(g.ZoneDropDown).SelectedOption.Text).ToList();
                 CollectionAssert.AreEqual(zoneNames.OrderBy(z => z), zoneNames, $"Zones not sorted on page {countryPage}");
             }
+        }
+
+        [Test, Description("Task 12. Add product, fill General, Information and Prices. Check save in admin panel.")]
+        public void AddProductToCatalogTest()
+        {
+            WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
+            AdminHelper.LoginAsAdmin("admin", "admin");
+            AdminHelper.GetAllTabs().First(tab => tab.Text == "Catalog").Click();
+            CatalogHelper.ClickAddProduct();
+            CatalogHelper.SetStatus(true);
+            var name = $"Duck_{MethodsExtensions.RandomString(3, true)}";
+            CatalogHelper.SetName(name);
+            CatalogHelper.SetCode(MethodsExtensions.RandomString(6).ToUpper());
+            CatalogHelper.SetCategory("Rubber Ducks");
+            CatalogHelper.SelectDefaultCategory("Rubber Ducks");
+            CatalogHelper.SelectProductGroups(new[] { "Female", "Unisex" });
+            CatalogHelper.SetQuantity(5);
+            CatalogHelper.SelectSoldOutStatus("Temporary sold out");
+            var imagePath = Path.Combine(Environment.CurrentDirectory, @"Resources\donald-duck.png");
+            CatalogHelper.SetImage(imagePath);
+            CatalogHelper.SetDateValidFrom("2023-02-18");
+            CatalogHelper.SetDateValidTo("2024-02-18");
+            CatalogHelper.ChangeTab("Information");
+            if (WebDriver.WaitElementVisible(By.CssSelector("div#tab-information")) == null)
+                throw new ApplicationException("Information tab is not visible or not found");
+            CatalogHelper.SelectManufacturer("ACME Corp.");
+            // Keep default supplier
+            CatalogHelper.SetKeywords("Donald duck, disney");
+            CatalogHelper.SetShortDescription("This is short description of Donald Duck");
+            CatalogHelper.SetDescription($"Text about Donald Duck{Environment.NewLine}This is Walt Disney character");
+            CatalogHelper.SetTitle("DISNEY");
+            CatalogHelper.SetMetaDescription("This is meta description text");
+            CatalogHelper.ChangeTab("Prices");
+            if (WebDriver.WaitElementVisible(By.CssSelector("div#tab-prices")) == null)
+                throw new ApplicationException("Prices tab is not visible or not found");
+            CatalogHelper.SetPurchasePrice(10, "US Dollars");
+            // Keep default tax class
+            CatalogHelper.SetTaxPrice(1, "USD");
+            CatalogHelper.SetTaxPrice(0.5f, "EUR");
+            CatalogHelper.ClickSave();
+            if (WebDriver.WaitElementVisible(AdminHelper.ByTabHeader()) == null)
+                throw new ApplicationException("Catalog page is not loaded or header not found");
+            var catalogNames = WebDriver.FindElements(By.CssSelector("table.dataTable td:nth-child(3)"));
+            Console.WriteLine($"Saved catalogs: {String.Join(", ", catalogNames.Select(c => c.Text))}");
+
+            Assert.IsTrue(catalogNames.Any(c => c.Text == name), $"Duck {name} wasn't saved");
         }
     }
 }

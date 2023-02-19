@@ -10,7 +10,7 @@ namespace Homework2_Infra.Helpers
     public class AdminHelper
     {
         public static string BasePageUrl { get; private set; } = "http://localhost/litecart/admin/";
-        private IWebDriver _driver;
+        private readonly IWebDriver _driver;
 
         #region Simple actions and locators
         public IWebElement GetLoginField() => _driver.FindElement(By.XPath("//input[@name='username']"));
