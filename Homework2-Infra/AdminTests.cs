@@ -96,6 +96,7 @@ namespace Homework2_Infra
             AdminHelper.LoginAsAdmin("admin", "admin");
             AdminHelper.GetAllTabs().First(tab => tab.Text == "Catalog").Click();
             CatalogHelper.ClickAddProduct();
+            // Fill General tab
             CatalogHelper.SetStatus(true);
             var name = $"Duck_{MethodsExtensions.RandomString(3, true)}";
             CatalogHelper.SetName(name);
@@ -109,6 +110,7 @@ namespace Homework2_Infra
             CatalogHelper.SetImage(imagePath);
             CatalogHelper.SetDateValidFrom("2023-02-18");
             CatalogHelper.SetDateValidTo("2024-02-18");
+            // Fill Information tab
             CatalogHelper.ChangeTab("Information");
             if (WebDriver.WaitElementVisible(By.CssSelector("div#tab-information")) == null)
                 throw new ApplicationException("Information tab is not visible or not found");
@@ -119,6 +121,7 @@ namespace Homework2_Infra
             CatalogHelper.SetDescription($"Text about Donald Duck{Environment.NewLine}This is Walt Disney character");
             CatalogHelper.SetTitle("DISNEY");
             CatalogHelper.SetMetaDescription("This is meta description text");
+            // Fill price tab
             CatalogHelper.ChangeTab("Prices");
             if (WebDriver.WaitElementVisible(By.CssSelector("div#tab-prices")) == null)
                 throw new ApplicationException("Prices tab is not visible or not found");
