@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Homework2_Infra.Helpers
         }
         public static (IWebElement regularPrice, IWebElement campaignPrice) GetPriceElementsInContext(IWebElement context)
         {
-            if(context.IsElementVisible(By.CssSelector("[class=price]")))
+            if (context.IsElementVisible(By.CssSelector("[class=price]")))
             {
                 return (context.FindElement(By.CssSelector("[class=price]")), null);
             }
@@ -28,6 +29,13 @@ namespace Homework2_Infra.Helpers
                 return (context.FindElement(By.CssSelector("[class=regular-price]")),
                     context.FindElement(By.CssSelector("[class=campaign-price]")));
             }
+        }
+        public void ClickAddToCart() => _driver.FindElement(By.CssSelector("button[name=add_cart_product]")).Click();
+        public void SelectFirstSizeIfOptionExists()
+        {
+            var locator = By.XPath("//select[@name='options[Size]']");
+            if (_driver.IsElementEnabled(locator))
+                new SelectElement(_driver.FindElement(locator)).SelectByIndex(1);
         }
         #endregion
 

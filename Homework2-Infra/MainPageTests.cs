@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Homework2_Infra
 {
@@ -93,6 +95,47 @@ namespace Homework2_Infra
             MainPage.Login(email, "password");
             WebDriver.WaitElementEnabled(MainPageHelper.LogoutBy); // wait after redirect
             MainPage.ClickLogout();
+        }
+
+        [Test, Description("Task 13. Add 3 products to cart, then delete them one by one")]
+        public void AddAndRemoveProductsInCartTest()
+        {
+            WebDriver.Navigate().GoToUrl(MainPageHelper.BasePageUrl);
+            var cartQuantity = Int32.Parse(MainPage.GetCartQuantityElement().Text);
+            while (cartQuantity < 3)
+            {
+                if (WebDriver.WaitElementVisible(By.CssSelector($"div#box-most-popular")) == null)
+                    throw new ApplicationException("Most popular title not found on main page");
+                var firstProduct = MainPage.GetAllProductCards().First();
+                firstProduct.Click();
+                if (WebDriver.WaitElementVisible(By.CssSelector("h1.title")) == null)
+                    throw new ApplicationException("Product page not loaded or h1 header not found");
+                var quantityTextBeforeAddToCart = MainPage.GetCartQuantityElement().Text;
+                ProductPage.SelectFirstSizeIfOptionExists();
+                ProductPage.ClickAddToCart();
+                if (!MainPage.GetCartQuantityElement().WaitElementUpdateCurrentText(quantityTextBeforeAddToCart))
+                    throw new ApplicationException("Cart info was not updated after add product");
+                WebDriver.Navigate().Back();
+                cartQuantity = Int32.Parse(MainPage.GetCartQuantityElement().Text);
+            }
+            MainPage.ClickCheckout();
+            var productRowsCount = MainPage.GetOrderSummaryRows().Count;
+            while (productRowsCount != 0)
+            {
+                var button = MainPage.GetRemoveCartItemButton();
+                button.Click();
+                var waitTableUpdate = Task.Run(() =>
+                {
+                    while (MainPage.GetOrderSummaryRows().Count == productRowsCount)
+                        Thread.Sleep(TimeSpan.FromSeconds(1));
+                }, new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
+                waitTableUpdate.Wait();
+                if (!waitTableUpdate.IsCompleted)
+                    throw new ApplicationException("Cart summary table not updated after remove product");
+                else
+                    productRowsCount = MainPage.GetOrderSummaryRows().Count;
+            }
+            Assert.That(MainPage.GetCartMessage(), Is.EqualTo("There are no items in your cart."));
         }
     }
 }

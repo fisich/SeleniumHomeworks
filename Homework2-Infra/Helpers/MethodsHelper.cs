@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Homework2_Infra.Helpers
@@ -61,6 +62,17 @@ namespace Homework2_Infra.Helpers
                 return webDriver.FindElement(by);
             else
                 return null;
+        }
+
+        public static bool WaitElementUpdateCurrentText(this IWebElement webElement, string currentText)
+        {
+            var task = Task.Run(() =>
+            {
+                while (webElement.Text == currentText)
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+            }, new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
+            task.Wait();
+            return task.IsCompleted && !task.IsCanceled;
         }
 
         public static void SelectRandomItem(this SelectElement select)
