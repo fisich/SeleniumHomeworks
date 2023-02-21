@@ -12,12 +12,14 @@ namespace Homework2_Infra
     {
         public AdminHelper AdminHelper { get; private set; }
         public CatalogHelper CatalogHelper { get; private set; }
+        public CountryHelper CountryHelper { get; private set; }
 
         [SetUp]
         public void Initialize()
         {
             AdminHelper = new AdminHelper(WebDriver);
             CatalogHelper = new CatalogHelper(WebDriver);
+            CountryHelper = new CountryHelper(WebDriver);
         }
 
         [Test]
@@ -136,6 +138,30 @@ namespace Homework2_Infra
             Console.WriteLine($"Saved catalogs: {String.Join(", ", catalogNames.Select(c => c.Text))}");
 
             Assert.IsTrue(catalogNames.Any(c => c.Text == name), $"Duck {name} wasn't saved");
+        }
+
+        [Test, Description("Task 14. Open add new country, then check that all info links opened in new window on click")]
+        public void CheckThatLinksOnAddCountryPageOpenedInNewWindow()
+        {
+            WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
+            AdminHelper.LoginAsAdmin("admin", "admin");
+            AdminHelper.GetAllTabs().First(tab => tab.Text == "Countries").Click();
+            CountryHelper.ClickAddCountry();
+            var links = CountryHelper.GetExternalLinks();
+            foreach (var link in links)
+            {
+                var currentWindow = WebDriver.CurrentWindowHandle;
+                var currentTitle = WebDriver.Title;
+                link.Click();
+                var newWindow = WebDriver.WaitOtherWindowAppears(currentWindow);
+                if (newWindow == null)
+                    throw new ApplicationException("New window link not appear");
+                WebDriver.SwitchTo().Window(newWindow);
+                Assert.That(WebDriver.Title, Is.Not.EqualTo(currentTitle), "Title not changed");
+                WebDriver.Close();
+                WebDriver.SwitchTo().Window(currentWindow);
+            }
+            Assert.That(WebDriver.WindowHandles.Count, Is.EqualTo(1));
         }
     }
 }

@@ -103,5 +103,24 @@ namespace Homework2_Infra.Helpers
                 throw new NotImplementedException($"Unsupported color format {rawColor}");
             }
         }
+
+        public static string WaitOtherWindowAppears(this IWebDriver driver, params string[] handledWindows)
+        {
+            var task = Task<string>.Run(() =>
+            {
+                while (driver.WindowHandles.Equals(handledWindows))
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                }
+                if (driver.WindowHandles.Equals(handledWindows))
+                    return null;
+                else
+                {
+                    return driver.WindowHandles.Except(handledWindows).First();
+                }
+            }, new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
+            task.Wait();
+            return task.Result;
+        }
     }
 }
