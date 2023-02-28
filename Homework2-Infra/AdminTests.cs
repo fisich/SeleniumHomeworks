@@ -5,6 +5,8 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Homework2_Infra
 {
@@ -162,6 +164,41 @@ namespace Homework2_Infra
                 WebDriver.SwitchTo().Window(currentWindow);
             }
             Assert.That(WebDriver.WindowHandles.Count, Is.EqualTo(1));
+        }
+
+        [Test, Description("Task 17. Check logs while open products on admin catalog page")]
+        public void CheckLogsWhileOpenProductsTest()
+        {
+            WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
+            AdminHelper.LoginAsAdmin("admin", "admin");
+            AdminHelper.GetAllTabs().First(tab => tab.Text == "Catalog").Click();
+            CatalogHelper.GetCatalogList()
+                .Where(c => CatalogHelper.GetCatalogInfo(c).Name == "Rubber Ducks")
+                .First().FindElements(By.CssSelector("td"))[2].FindElement(By.TagName("a")).Click();
+            var waitTask = Task<bool>.Run(() =>
+            {
+                while (CatalogHelper.GetCatalogList().Count < 3)
+                {
+                    Task.Delay(TimeSpan.FromSeconds(1));
+                }
+                return true;
+            }, new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
+            waitTask.Wait();
+            if (!waitTask.IsCompleted)
+                throw new TimeoutException("Table was not loaded after click");
+            var catalogSize = CatalogHelper.GetCatalogList()
+                .Select(c => CatalogHelper.GetCatalogInfo(c))
+                .Where(p => p.Name.Contains("Duck") && !p.Name.Contains("Ducks")).ToList().Count;
+            for (int i = 0; i < catalogSize; i++)
+            {
+                var product = CatalogHelper.GetCatalogList()
+                    .Select(c => CatalogHelper.GetCatalogInfo(c))
+                    .Where(p => p.Name.Contains("Duck") && !p.Name.Contains("Ducks")).ElementAt(i);
+                product.editPageButton.Click();
+                foreach (var logType in WebDriver.Manage().Logs.AvailableLogTypes)
+                    Assert.IsEmpty(WebDriver.Manage().Logs.GetLog(logType), $"Logs appeared on page {product.Name}");
+                WebDriver.Navigate().Back();
+            }
         }
     }
 }

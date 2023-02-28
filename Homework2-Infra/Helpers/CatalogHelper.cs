@@ -1,5 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Homework2_Infra.Helpers
@@ -12,6 +14,13 @@ namespace Homework2_Infra.Helpers
         public void ClickAddProduct() => _driver.FindElement(By.CssSelector("td[id=content] a.button:nth-child(2)")).Click();
         public void ChangeTab(string tabName) => _driver.FindElements(By.CssSelector("ul.index a")).First(a => a.Text == tabName).Click();
         public void ClickSave() => _driver.FindElement(By.CssSelector("button[name=save]")).Click();
+
+        public IReadOnlyCollection<IWebElement> GetCatalogList() => _driver.FindElements(By.CssSelector("table.dataTable tr.row")).Skip(1).ToList();
+        public (string Name, IWebElement editPageButton) GetCatalogInfo(IWebElement countryRow)
+        {
+            var cols = countryRow.FindElements(By.CssSelector("td"));
+            return (cols[2].Text, cols[4].FindElement(By.CssSelector("a")));
+        }
         #region General
         public void SetStatus(bool enabled)
         {
