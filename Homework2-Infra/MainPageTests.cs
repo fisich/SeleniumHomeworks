@@ -24,7 +24,7 @@ namespace Homework2_Infra
             Registration = new RegistrationHelper(WebDriver); 
         }
 
-        [Test]
+        [Test, Description("Task 7. Check that every product have only one sticker")]
         public void CheckThatEveryProductHaveOnlyOneStickerTest()
         {
             WebDriver.Navigate().GoToUrl(MainPageHelper.BasePageUrl);

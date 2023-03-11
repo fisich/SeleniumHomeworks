@@ -24,7 +24,7 @@ namespace Homework2_Infra
             CountryHelper = new CountryHelper(WebDriver);
         }
 
-        [Test]
+        [Test, Description("Task 1. Admin login scenario")]
         public void LoginAsAdminTest()
         {
             WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
@@ -33,7 +33,7 @@ namespace Homework2_Infra
             Assert.That(WebDriver.Url, Is.EqualTo(AdminHelper.BasePageUrl));
         }
 
-        [Test, Description("Check that all left tabs and subtabs have h1 header")]
+        [Test, Description("Task 6. Check that all left tabs and subtabs have h1 header")]
         public void CheckH1HeaderOnTabsTest()
         {
             WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
@@ -58,7 +58,7 @@ namespace Homework2_Infra
             }
         }
 
-        [Test]
+        [Test, Description("Task 8. Check that countries and zones sorted by names")]
         public void CheckThatCountriesAndZonesSortedByNames()
         {
             WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
@@ -77,7 +77,7 @@ namespace Homework2_Infra
             }
         }
 
-        [Test]
+        [Test, Description("Task 9. Check that geo zones sorted by names")]
         public void CheckThatGeoZonesSortedByNames()
         {
             WebDriver.Navigate().GoToUrl(AdminHelper.BasePageUrl);
